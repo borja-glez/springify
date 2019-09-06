@@ -2,11 +2,31 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>com.borjaglez</groupId>
 	<artifactId>springify</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
 	<name>Springify</name>
+	<description>Springify is an open source Java Spring utility library</description>
+	<url>https://github.com/borja-glez/springify</url>
+
+	<developers>
+		<developer>
+			<name>Borja González Enríquez</name>
+			<email>borja@borjaglez.com</email>
+			<organization>com.borjaglez</organization>
+			<organizationUrl>https://github.com/borja-glez</organizationUrl>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -83,14 +103,17 @@
 		</plugins>
 	</build>
 
+	<scm>
+		<connection>scm:git:git://github.com/borja-glez/springify.git</connection>
+		<developerConnection>scm:git:ssh://github.com:borja-glez/springify.git</developerConnection>
+		<url>https://github.com/borja-glez/springify/tree/master</url>
+	</scm>
+
+	<!-- Only for snapshots (Releases go on Maven Central) -->
 	<distributionManagement>
 		<snapshotRepository>
 			<id>nexus-snapshots</id>
 			<url>http://nexus.borjaglez.com/repository/maven-snapshots/</url>
 		</snapshotRepository>
-		<repository>
-			<id>nexus-releases</id>
-			<url>http://nexus.borjaglez.com/repository/maven-releases/</url>
-		</repository>
 	</distributionManagement>
 </project>
