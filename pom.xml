@@ -108,12 +108,4 @@
 		<developerConnection>scm:git:ssh://github.com:borja-glez/springify.git</developerConnection>
 		<url>https://github.com/borja-glez/springify/tree/master</url>
 	</scm>
-
-	<!-- Only for snapshots (Releases go on Maven Central) -->
-	<distributionManagement>
-		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<url>http://nexus.borjaglez.com/repository/maven-snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
