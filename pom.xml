@@ -64,9 +64,6 @@
 	<profiles>
 		<profile>
 			<id>maven-central</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<plugins>
 					<plugin>
@@ -119,10 +116,7 @@
 			</distributionManagement>
 		</profile>
 		<profile>
-			<id>nexus.borjaglex.com</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
+			<id>nexus.borjaglez.com</id>
 			<distributionManagement>
 				<snapshotRepository>
 					<id>nexus-snapshots</id>
