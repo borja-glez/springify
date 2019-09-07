@@ -8,7 +8,7 @@ Add this to your pom.xml file to use the latest version of Springify Security:
         <dependency>
             <groupId>com.borjaglez</groupId>
             <artifactId>springify-security</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
  
 ### License
