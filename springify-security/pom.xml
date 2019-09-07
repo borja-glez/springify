@@ -10,9 +10,9 @@
 	</parent>
 	<artifactId>springify-security</artifactId>
 
-	<name>Springify Crypto</name>
-	<description>Crypto utilities of the Springify library.</description>
-	<url>https://github.com/borja-glez/springify/tree/master/springify-crypto</url>
+	<name>Springify Security</name>
+	<description>Security utilities of the Springify library.</description>
+	<url>https://github.com/borja-glez/springify/tree/master/springify-security</url>
 
 	<developers>
 		<developer>
