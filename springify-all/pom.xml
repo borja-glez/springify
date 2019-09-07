@@ -39,7 +39,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.borjaglez</groupId>
-			<artifactId>springify-crypto</artifactId>
+			<artifactId>springify-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

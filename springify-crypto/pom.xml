@@ -8,7 +8,7 @@
 		<artifactId>springify</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>springify-crypto</artifactId>
+	<artifactId>springify-security</artifactId>
 
 	<name>Springify Crypto</name>
 	<description>Crypto utilities of the Springify library.</description>
