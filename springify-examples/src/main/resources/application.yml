@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/springify-example
+    username: springify
+    password: springify
+    hikari:      connection-timeout: 20000
+      maximum-pool-size: 5
+  jpa:
+    properties.hibernate.jdbc.lob.non_contextual_creation: true   
+    show-sql: true
