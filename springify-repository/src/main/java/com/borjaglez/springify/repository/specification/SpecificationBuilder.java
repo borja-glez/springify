@@ -17,13 +17,18 @@ package com.borjaglez.springify.repository.specification;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.lang.NonNull;
 
 import com.borjaglez.springify.repository.filter.Filter;
+import com.borjaglez.springify.repository.filter.Filter.Operator;
+import com.borjaglez.springify.repository.filter.PageFilter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Jon (Zhongjun Tian)
@@ -61,7 +66,15 @@ public class SpecificationBuilder<T> {
 		return this;
 	}
 
-	public SpecificationBuilder<T> where(String field, String operator, Object value) {
+	public SpecificationBuilder<T> where(PageFilter pageFilter) {
+		if (this.repository == null) {
+			throw new IllegalStateException("Did not specify which repository, please use from() before where()");
+		}
+		specification.add(new WhereSpecification<T>(pageFilter.getFilter()));
+		return this;
+	}
+
+	public SpecificationBuilder<T> where(String field, Operator operator, Object value) {
 		Filter filter = new Filter(field, operator, value);
 		return where(filter);
 	}
@@ -81,12 +94,40 @@ public class SpecificationBuilder<T> {
 		return this;
 	}
 
+	public Long count() {
+		return repository.count(specification);
+	}
+
+	public Optional<T> findOne() {
+		return repository.findOne(specification);
+	}
+
 	public List<T> findAll() {
 		return repository.findAll(specification);
 	}
 
-	public Page<T> findPage(Pageable page) {
+	public Page<T> findAll(Pageable page) {
 		return repository.findAll(specification, page);
 	}
 
+	public List<T> findAll(Sort sort) {
+		return repository.findAll(specification, sort);
+	}
+	
+	public Page<T> findAll(@NonNull PageFilter pageFilter) {
+		if(isInValidPageFilter(pageFilter)) {
+			throw new IllegalArgumentException("Page Filter require ar least the page index and the page size.");
+		}
+		if (pageFilter.getPageIndex() < 0) {
+			throw new IllegalArgumentException("Page index must not be less than zero!");
+		}
+		if (pageFilter.getPageSize() < 1) {
+			throw new IllegalArgumentException("Page size must not be less than one!");
+		}
+		return findAll(pageFilter.toPageable());
+	}
+
+	private boolean isInValidPageFilter(PageFilter pageFilter) {
+		return pageFilter == null || pageFilter.getPageIndex() == null || pageFilter.getPageSize() == null;
+	}
 }

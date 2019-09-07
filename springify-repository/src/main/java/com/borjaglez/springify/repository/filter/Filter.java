@@ -18,35 +18,13 @@ package com.borjaglez.springify.repository.filter;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * @author Jon (Zhongjun Tian)
  * @author Borja González Enríquez
  */
 public class Filter {
-	// Logic
-	public static final String AND = "and";
-	public static final String OR = "or";
-	
-	// Operators
-	public static final String EQUAL = "eq";
-	public static final String NOT_EQUAL = "neq";
-	public static final String IS_NULL = "isnull";
-	public static final String IS_NOT_NULL = "isnotnull";
-	public static final String IS_EMPTY = "isempty";
-	public static final String IS_NOT_EMPTY = "isnotempty";
-	public static final String CONTAINS = "contains";
-	public static final String NOT_CONTAINS = "doesnotcontain";
-	public static final String START_WITH = "startswith";
-	public static final String END_WITH = "endswith";
-	public static final String GREATER_THAN = "gt";
-	public static final String LESS_THAN = "lt";
-	public static final String GREATER_THAN_OR_EQUAL = "gte";
-	public static final String LESS_THAN_OR_EQUAL = "lte";
-	public static final String IN = "in";
-	
-	// Sorting
-	public static final String ASC = "asc";
-	public static final String DESC = "desc";
 
 	// delimiter for crossing table search
 	public static final String PATH_DELIMITER = ".";
@@ -54,49 +32,47 @@ public class Filter {
 	public static final String RIGHT_BRACKET = ")";
 
 	String field;
-	String operator;
+	Operator operator;
 	Object value;
-	String logic;
-	String sort;
-	Integer sortOrder;
-	boolean group;
+	Logic logic;
+	Boolean ignoreCase = false;
 	List<Filter> filters;
 
 	public Filter() {
 	}
 
-	public Filter(String field, String operator, Object value) {
+	public Filter(String field, Operator operator, Object value) {
 		this.field = field;
 		this.operator = operator;
 		this.value = value;
 	}
 
-	public Filter(String logic, Filter... filters) {
+	public Filter(Logic logic, Filter... filters) {
 		this.logic = logic;
 		this.filters = Arrays.asList(filters);
 	}
 
-	public Filter and(Filter filters) {
-		return new Filter(AND, filters);
+	public static Filter and(Filter filter) {
+		return new Filter(Logic.AND, filter);
 	}
 
-	public Filter or(Filter filters) {
-		return new Filter(OR, filters);
+	public static Filter or(Filter filter) {
+		return new Filter(Logic.OR, filter);
 	}
 
 	public static Filter and(Filter... filters) {
-		return new Filter(AND, filters);
+		return new Filter(Logic.AND, filters);
 	}
 
 	public static Filter or(Filter... filters) {
-		return new Filter(OR, filters);
+		return new Filter(Logic.OR, filters);
 	}
 
-	public String getLogic() {
+	public Logic getLogic() {
 		return logic;
 	}
 
-	public void setLogic(String logic) {
+	public void setLogic(Logic logic) {
 		this.logic = logic;
 	}
 
@@ -108,11 +84,11 @@ public class Filter {
 		this.field = field;
 	}
 
-	public String getOperator() {
+	public Operator getOperator() {
 		return operator;
 	}
 
-	public void setOperator(String operator) {
+	public void setOperator(Operator operator) {
 		this.operator = operator;
 	}
 
@@ -123,30 +99,6 @@ public class Filter {
 	public void setValue(Object value) {
 		this.value = value;
 	}
-	
-	public String getSort() {
-		return sort;
-	}
-	
-	public void setSort(String sort) {
-		this.sort = sort;
-	}
-	
-	public Integer getSortOrder() {
-		return sortOrder;
-	}
-	
-	public void setSortOrder(Integer sortOrder) {
-		this.sortOrder = sortOrder;
-	}
-	
-	public boolean isGroup() {
-		return group;
-	}
-	
-	public void setGroup(boolean group) {
-		this.group = group;
-	}
 
 	public List<Filter> getFilters() {
 		return filters;
@@ -154,5 +106,46 @@ public class Filter {
 
 	public void setFilters(List<Filter> filters) {
 		this.filters = filters;
+	}
+	
+	public Boolean getIgnoreCase() {
+		return ignoreCase;
+	}
+	
+	public void setIgnoreCase(Boolean ignoreCase) {
+		this.ignoreCase = ignoreCase;
+	}
+
+	public enum Logic {
+		AND("and"), OR("or");
+
+		private String value;
+
+		private Logic(String value) {
+			this.value = value;
+		}
+
+		@JsonValue
+		public String getValue() {
+			return value;
+		}
+	}
+
+	public enum Operator {
+		EQUAL("eq"), NOT_EQUAL("neq"), IS_NULL("isnull"), IS_NOT_NULL("isnotnull"), IS_EMPTY("isempty"),
+		IS_NOT_EMPTY("isnotempty"), CONTAINS("contains"), NOT_CONTAINS("notcontains"), STARTS_WITH("startswith"),
+		ENDS_WITH("endswith"), GREATER_THAN("gt"), LESS_THAN("lt"), GREATER_THAN_OR_EQUAL("gte"),
+		LESS_THAN_OR_EQUAL("lte"), IN("in");
+
+		private String value;
+
+		private Operator(String value) {
+			this.value = value;
+		}
+
+		@JsonValue
+		public String getValue() {
+			return value;
+		}
 	}
 }

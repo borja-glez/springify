@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.borjaglez.springify.repository.filter.Filter;
+import com.borjaglez.springify.repository.filter.Filter.Logic;
+import com.borjaglez.springify.repository.filter.Filter.Operator;
 import com.borjaglez.springify.repository.specification.exception.SpecificationException;
 
 import javax.persistence.criteria.*;
@@ -29,6 +31,7 @@ import java.util.*;
 
 /**
  * Created by zhongjun on 6/18/17.
+ * 
  * @author Borja González Enríquez
  */
 @SuppressWarnings("serial")
@@ -53,10 +56,10 @@ public class WhereSpecification<T> implements Specification<T> {
 		if (filter.getLogic() == null) {// one filter
 			return doGetPredicate(filter, root, cb);
 		} else {// logic filters
-			if (filter.getLogic().equals(Filter.AND)) {
+			if (filter.getLogic().equals(Logic.AND)) {
 				Predicate[] predicates = getPredicateList(filter, root, cb);
 				return cb.and(predicates);
-			} else if (filter.getLogic().equals(Filter.OR)) {
+			} else if (filter.getLogic().equals(Logic.OR)) {
 				Predicate[] predicates = getPredicateList(filter, root, cb);
 				return cb.or(predicates);
 			} else {
@@ -82,6 +85,7 @@ public class WhereSpecification<T> implements Specification<T> {
 
 	private Predicate doGetPredicate(Filter filter, Path<T> root, CriteriaBuilder cb) {
 		String field = filter.getField();
+		Boolean ignoreCase = filter.getIgnoreCase();
 		Path<T> path = null;
 		try {
 			logger.debug("Parsing child path {} of root {}", field, root.getJavaType());
@@ -90,12 +94,12 @@ public class WhereSpecification<T> implements Specification<T> {
 			throw new SpecificationException(
 					"Met problem when parse field path: " + field + ", this path does not exist. " + e.getMessage(), e);
 		}
-		String operator = filter.getOperator();
+		Operator operator = filter.getOperator();
 		Object value = filter.getValue();
 		try {
 			logger.debug("Working on root {}, field {}, java type {}, operator {}, value {}", root.getJavaType(), field,
 					path.getJavaType(), operator, value);
-			return doGetPredicate(cb, path, operator, value);
+			return doGetPredicate(cb, path, operator, value, ignoreCase);
 		} catch (Exception e) {
 			throw new SpecificationException(
 					"Unable to filter by: " + filter + ", value type:" + value.getClass() + ", operator: " + operator
@@ -104,7 +108,8 @@ public class WhereSpecification<T> implements Specification<T> {
 		}
 	}
 
-	private Predicate doGetPredicate(CriteriaBuilder cb, Path<T> path, String operator, Object value) {
+	private Predicate doGetPredicate(CriteriaBuilder cb, Path<T> path, Operator operator, Object value,
+			Boolean ignoreCase) {
 		Predicate p = null;
 		// look at Hibernate Mapping types
 		// we only support primitive types and data/time types
@@ -119,80 +124,80 @@ public class WhereSpecification<T> implements Specification<T> {
 		/*
 		 * Operator for Comparable type
 		 */
-		case Filter.EQUAL:
+		case EQUAL:
 			value = parseValue(path, value);
-			p = cb.equal(path, (value));
+			p = equal(cb, path, value, ignoreCase);
 			break;
-		case Filter.NOT_EQUAL:
+		case NOT_EQUAL:
 			value = parseValue(path, value);
-			p = cb.notEqual(path, (value));
+			p = notEqual(cb, path, value, ignoreCase);
 			break;
 		/*
 		 * Operator for any type
 		 */
-		case Filter.IS_NULL:
+		case IS_NULL:
 			p = cb.isNull(path);
 			break;
-		case Filter.IS_NOT_NULL:
+		case IS_NOT_NULL:
 			p = cb.isNotNull(path);
 			break;
 		/*
 		 * Operator for String type
 		 */
-		case Filter.IS_EMPTY:
+		case IS_EMPTY:
 			p = cb.equal(path, "");
 			break;
-		case Filter.IS_NOT_EMPTY:
+		case IS_NOT_EMPTY:
 			p = cb.notEqual(path, "");
 			break;
-		case Filter.CONTAINS:
-			p = cb.like(path.as(String.class), "%" + value + "%");
+		case CONTAINS:
+			p = contains(cb, path, value, ignoreCase);
 			break;
-		case Filter.NOT_CONTAINS:
-			p = cb.notLike(path.as(String.class), "%" + value + "%");
+		case NOT_CONTAINS:
+			p = notContains(cb, path, value, ignoreCase);
 			break;
-		case Filter.START_WITH:
-			p = cb.like(path.as(String.class), value + "%");
+		case STARTS_WITH:
+			p = startsWith(cb, path, value, ignoreCase);
 			break;
-		case Filter.END_WITH:
-			p = cb.like(path.as(String.class), "%" + value);
+		case ENDS_WITH:
+			p = endsWith(cb, path, value, ignoreCase);
 			break;
 		/*
 		 * Operator for Comparable type; does not support Calendar
 		 */
-		case Filter.GREATER_THAN:
+		case GREATER_THAN:
 			value = parseValue(path, value);
 			if (value instanceof Date) {
 				p = cb.greaterThan(path.as(Date.class), (Date) (value));
 			} else {
-				p = cb.greaterThan(path.as(String.class), (value).toString());
+				p = greaterThan(cb, path, value, ignoreCase);
 			}
 			break;
-		case Filter.GREATER_THAN_OR_EQUAL:
+		case GREATER_THAN_OR_EQUAL:
 			value = parseValue(path, value);
 			if (value instanceof Date) {
 				p = cb.greaterThanOrEqualTo(path.as(Date.class), (Date) (value));
 			} else {
-				p = cb.greaterThanOrEqualTo(path.as(String.class), (value).toString());
+				p = greaterThanOrEqualTo(cb, path, value, ignoreCase);
 			}
 			break;
-		case Filter.LESS_THAN:
+		case LESS_THAN:
 			value = parseValue(path, value);
 			if (value instanceof Date) {
 				p = cb.lessThan(path.as(Date.class), (Date) (value));
 			} else {
-				p = cb.lessThan(path.as(String.class), (value).toString());
+				p = lessThan(cb, path, value, ignoreCase);
 			}
 			break;
-		case Filter.LESS_THAN_OR_EQUAL:
+		case LESS_THAN_OR_EQUAL:
 			value = parseValue(path, value);
 			if (value instanceof Date) {
 				p = cb.lessThanOrEqualTo(path.as(Date.class), (Date) (value));
 			} else {
-				p = cb.lessThanOrEqualTo(path.as(String.class), (value).toString());
+				p = lessThanOrEqualTo(cb, path, value, ignoreCase);
 			}
 			break;
-		case Filter.IN:
+		case IN:
 			p = path.in(value);
 			break;
 		default:
@@ -200,6 +205,76 @@ public class WhereSpecification<T> implements Specification<T> {
 			throw new IllegalStateException("unknown operator: " + operator);
 		}
 		return p;
+	}
+
+	private Predicate equal(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+		if (ignoreCase)
+			return cb.equal(cb.upper(path.as(String.class)), value.toString().toUpperCase());
+		else
+			return cb.equal(path, value);
+	}
+
+	private Predicate notEqual(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+		if (ignoreCase)
+			return cb.notEqual(cb.upper(path.as(String.class)), value.toString().toUpperCase());
+		else
+			return cb.notEqual(path, value);
+	}
+
+	private Predicate contains(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+		if (ignoreCase)
+			return cb.like(cb.upper(path.as(String.class)), "%" + value.toString().toUpperCase() + "%");
+		else
+			return cb.like(path.as(String.class), "%" + value + "%");
+	}
+
+	private Predicate notContains(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+		if (ignoreCase)
+			return cb.notLike(cb.upper(path.as(String.class)), "%" + value.toString().toUpperCase() + "%");
+		else
+			return cb.notLike(path.as(String.class), "%" + value + "%");
+	}
+
+	private Predicate startsWith(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+		if (ignoreCase)
+			return cb.like(cb.upper(path.as(String.class)), value.toString().toUpperCase() + "%");
+		else
+			return cb.like(path.as(String.class), value + "%");
+	}
+
+	private Predicate endsWith(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+		if (ignoreCase)
+			return cb.like(cb.upper(path.as(String.class)), "%" + value.toString().toUpperCase());
+		else
+			return cb.like(path.as(String.class), "%" + value);
+	}
+
+	private Predicate greaterThan(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+		if (ignoreCase)
+			return cb.greaterThan(cb.upper(path.as(String.class)), value.toString().toUpperCase());
+		else
+			return cb.greaterThan(path.as(String.class), value.toString());
+	}
+
+	private Predicate greaterThanOrEqualTo(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+		if (ignoreCase)
+			return cb.greaterThanOrEqualTo(cb.upper(path.as(String.class)), value.toString().toUpperCase());
+		else
+			return cb.greaterThanOrEqualTo(path.as(String.class), value.toString());
+	}
+
+	private Predicate lessThan(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+		if (ignoreCase)
+			return cb.lessThan(cb.upper(path.as(String.class)), value.toString().toUpperCase());
+		else
+			return cb.lessThan(path.as(String.class), value.toString());
+	}
+
+	private Predicate lessThanOrEqualTo(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+		if (ignoreCase)
+			return cb.lessThanOrEqualTo(cb.upper(path.as(String.class)), value.toString().toUpperCase());
+		else
+			return cb.lessThanOrEqualTo(path.as(String.class), value.toString());
 	}
 
 	private Object parseValue(Path<T> path, Object value) {
