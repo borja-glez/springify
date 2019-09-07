@@ -55,7 +55,7 @@
 
 	<modules>
 		<module>springify-core</module>
-		<module>springify-crypto</module>
+		<module>springify-security</module>
 		<module>springify-repository</module>
 		<module>springify-all</module>
 		<module>springify-examples</module>
