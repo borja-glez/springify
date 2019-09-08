@@ -12,7 +12,9 @@ import javax.jms.*;
  * injected by the {@code @Resource()})<br>
  * annotation is performed in the ibm-ejb-jar-bnd.xml deployment decriptor file.
  * <p>
- * @see <a href="https://github.com/davinryan/common-rest-service">https://github.com/davinryan/common-rest-service</a>
+ * 
+ * @see <a href=
+ *      "https://github.com/davinryan/common-rest-service">https://github.com/davinryan/common-rest-service</a>
  */
 public class JmsQueuePublisher implements MessagePublisher {
 
@@ -38,8 +40,9 @@ public class JmsQueuePublisher implements MessagePublisher {
 
 	/**
 	 * Constructs a new QueuePublisher.
+	 * 
 	 * @param queueConnectionFactory the factory {@link QueueConnectionFactory}
-	 * @param dest the {@link Queue}
+	 * @param dest                   the {@link Queue}
 	 */
 	public JmsQueuePublisher(QueueConnectionFactory queueConnectionFactory, Queue dest) {
 		this.queueConnectionFactory = queueConnectionFactory;
@@ -147,10 +150,11 @@ public class JmsQueuePublisher implements MessagePublisher {
 
 	private QueueSender createMessageSender(QueueSession session) throws JMSException {
 		// Set persistent and TTL of zero (default)
-		QueueSender messageSender = session.createSender(destination);
-		messageSender.setDeliveryMode(DeliveryMode.PERSISTENT);
-		messageSender.setTimeToLive(0);
-		return messageSender;
+		try (QueueSender messageSender = session.createSender(destination)) {
+			messageSender.setDeliveryMode(DeliveryMode.PERSISTENT);
+			messageSender.setTimeToLive(0);
+			return messageSender;
+		}
 	}
 
 	private void sendMessage(QueueSender messageSender, TextMessage message) throws JMSException {
