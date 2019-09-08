@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.borjaglez.repository.entity.UserStateEnum;
 import com.borjaglez.repository.model.User;
 import com.borjaglez.repository.repository.UserRepository;
+import com.borjaglez.springify.repository.filter.AdvancedPageFilter;
 import com.borjaglez.springify.repository.filter.BasicPageFilter;
 import com.borjaglez.springify.repository.filter.Filter;
 import com.borjaglez.springify.repository.filter.PageFilter;
@@ -62,6 +63,12 @@ public class UserController {
 	@PostMapping(path = "/basicPageFilter", produces = "application/json")
 	public @ResponseBody List<User> basicPageFilter(@RequestBody BasicPageFilter basicPageFilter) {
 		return SpecificationBuilder.selectFrom(userRepository).where(basicPageFilter).findAll(basicPageFilter)
+				.getContent();
+	}
+
+	@PostMapping(path = "/advancedPageFilter", produces = "application/json")
+	public @ResponseBody List<User> advancedPageFilter(@RequestBody AdvancedPageFilter advancedPageFilter) {
+		return SpecificationBuilder.selectFrom(userRepository).where(advancedPageFilter).findAll(advancedPageFilter)
 				.getContent();
 	}
 }

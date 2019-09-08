@@ -24,7 +24,7 @@ import com.borjaglez.springify.repository.filter.Filter.Operator;
 /**
  * @author Borja González Enríquez
  */
-public final class BasicPageFilter extends AbstractPageFilter {
+public class BasicPageFilter extends AbstractPageFilter {
 
 	private String value = "";
 	private List<String> fields;
@@ -66,6 +66,14 @@ public final class BasicPageFilter extends AbstractPageFilter {
 
 	public void setOperator(Operator operator) {
 		this.operator = operator;
+	}
+	
+	public Boolean getIgnoreCase() {
+		return ignoreCase;
+	}
+	
+	public void setIgnoreCase(Boolean ignoreCase) {
+		this.ignoreCase = ignoreCase;
 	}
 
 	@Override
