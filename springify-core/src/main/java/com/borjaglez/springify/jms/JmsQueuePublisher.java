@@ -38,6 +38,8 @@ public class JmsQueuePublisher implements MessagePublisher {
 
 	/**
 	 * Constructs a new QueuePublisher.
+	 * @param queueConnectionFactory the factory {@link QueueConnectionFactory}
+	 * @param dest the {@link Queue}
 	 */
 	public JmsQueuePublisher(QueueConnectionFactory queueConnectionFactory, Queue dest) {
 		this.queueConnectionFactory = queueConnectionFactory;

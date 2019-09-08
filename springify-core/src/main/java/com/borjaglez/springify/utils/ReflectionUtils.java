@@ -47,20 +47,22 @@ public class ReflectionUtils {
 	}
 
 	/**
+	 * <p>
 	 * Invoke the getter method with the given {@code name} on the supplied target
 	 * object with the supplied {@code value}.
-	 * <p>
+	 * </p>
 	 * <p>
 	 * This method traverses the class hierarchy in search of the desired method. In
 	 * addition, an attempt will be made to make non-{@code public} methods
 	 * <em>accessible</em>, thus allowing one to invoke {@code protected},
 	 * {@code private}, and <em>package-private</em> getter methods.
-	 * <p>
+	 * </p>
 	 * <p>
 	 * In addition, this method supports JavaBean-style <em>property</em> names. For
 	 * example, if you wish to get the {@code name} property on the target object,
 	 * you may pass either &quot;name&quot; or &quot;getName&quot; as the method
 	 * name.
+	 * </p>
 	 *
 	 * @param target the target object on which to invoke the specified getter
 	 *               method
@@ -122,20 +124,22 @@ public class ReflectionUtils {
 	}
 
 	/**
+	 * <p>
 	 * Invoke the setter method with the given {@code name} on the supplied target
 	 * object with the supplied {@code value}.
-	 * <p>
+	 * </p>
 	 * <p>
 	 * This method traverses the class hierarchy in search of the desired method. In
 	 * addition, an attempt will be made to make non-{@code public} methods
 	 * <em>accessible</em>, thus allowing one to invoke {@code protected},
 	 * {@code private}, and <em>package-private</em> setter methods.
-	 * <p>
+	 * </p>
 	 * <p>
 	 * In addition, this method supports JavaBean-style <em>property</em> names. For
 	 * example, if you wish to set the {@code name} property on the target object,
 	 * you may pass either &quot;name&quot; or &quot;setName&quot; as the method
 	 * name.
+	 * </p>
 	 *
 	 * @param target the target object on which to invoke the specified setter
 	 *               method
@@ -153,20 +157,22 @@ public class ReflectionUtils {
 	}
 
 	/**
+	 * <p>
 	 * Invoke the setter method with the given {@code name} on the supplied target
 	 * object with the supplied {@code value}.
-	 * <p>
+	 * </p>
 	 * <p>
 	 * This method traverses the class hierarchy in search of the desired method. In
 	 * addition, an attempt will be made to make non-{@code public} methods
 	 * <em>accessible</em>, thus allowing one to invoke {@code protected},
 	 * {@code private}, and <em>package-private</em> setter methods.
-	 * <p>
+	 * </p>
 	 * <p>
 	 * In addition, this method supports JavaBean-style <em>property</em> names. For
 	 * example, if you wish to set the {@code name} property on the target object,
 	 * you may pass either &quot;name&quot; or &quot;setName&quot; as the method
 	 * name.
+	 * </p>
 	 *
 	 * @param target the target object on which to invoke the specified setter
 	 *               method
@@ -300,7 +306,8 @@ public class ReflectionUtils {
 	/**
 	 * Returns true if the field value is not null, else false.
 	 * 
-	 * @param field the field object to check not null value
+	 * @param field  the field object to check not null value
+	 * @param entity the object parent
 	 * @return true if the field value is not null, else false
 	 */
 	public static boolean isFieldNotNull(Field field, Object entity) {
@@ -310,7 +317,8 @@ public class ReflectionUtils {
 	/**
 	 * Returns true if the field value is null, else false.
 	 * 
-	 * @param field the field object to check null value
+	 * @param field  the field object to check null value
+	 * @param entity the object parent
 	 * @return true if the field value is null, else false
 	 */
 	public static boolean isFieldNull(Field field, Object entity) {
