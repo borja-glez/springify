@@ -51,6 +51,11 @@ public class Filter {
 		this.logic = logic;
 		this.filters = Arrays.asList(filters);
 	}
+	
+	public Filter(Logic logic, List<Filter> filters) {
+		this.logic = logic;
+		this.filters = filters;
+	}
 
 	public static Filter and(Filter filter) {
 		return new Filter(Logic.AND, filter);

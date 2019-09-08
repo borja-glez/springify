@@ -22,9 +22,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.lang.NonNull;
 
+import com.borjaglez.springify.repository.filter.AbstractPageFilter;
 import com.borjaglez.springify.repository.filter.Filter;
 import com.borjaglez.springify.repository.filter.Filter.Operator;
-import com.borjaglez.springify.repository.filter.PageFilter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,11 +67,11 @@ public class SpecificationBuilder<T> {
 		return this;
 	}
 
-	public SpecificationBuilder<T> where(PageFilter pageFilter) {
+	public SpecificationBuilder<T> where(AbstractPageFilter pageFilter) {
 		if (this.repository == null) {
 			throw new IllegalStateException("Did not specify which repository, please use from() before where()");
 		}
-		specification.add(new WhereSpecification<T>(pageFilter.getFilter()));
+		specification.add(new WhereSpecification<T>(pageFilter.toFilter()));
 		return this;
 	}
 
@@ -97,8 +97,7 @@ public class SpecificationBuilder<T> {
 
 	public SpecificationBuilder<T> groupBy(String... fields) {
 		specification.add(((root, criteriaQuery, criteriaBuilder) -> criteriaQuery
-				.groupBy(Arrays.asList(fields).stream().map(root::get).collect(Collectors.toList()))
-				.getRestriction()));
+				.groupBy(Arrays.asList(fields).stream().map(root::get).collect(Collectors.toList())).getRestriction()));
 		return this;
 	}
 
@@ -122,7 +121,7 @@ public class SpecificationBuilder<T> {
 		return repository.findAll(specification, sort);
 	}
 
-	public Page<T> findAll(@NonNull PageFilter pageFilter) {
+	public Page<T> findAll(@NonNull AbstractPageFilter pageFilter) {
 		if (isInValidPageFilter(pageFilter)) {
 			throw new IllegalArgumentException("Page Filter require ar least the page index and the page size.");
 		}
@@ -135,7 +134,7 @@ public class SpecificationBuilder<T> {
 		return findAll(pageFilter.toPageable());
 	}
 
-	private boolean isInValidPageFilter(PageFilter pageFilter) {
+	private boolean isInValidPageFilter(AbstractPageFilter pageFilter) {
 		return pageFilter == null || pageFilter.getPageIndex() == null || pageFilter.getPageSize() == null;
 	}
 }

@@ -106,9 +106,19 @@
 					</plugin>
 				</plugins>
 			</build>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+				</snapshotRepository>
+				<repository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
 		</profile>
 		<profile>
-			<id>nexus.borjaglez.com</id>
+			<id>nexus-borjaglez</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -171,16 +181,5 @@
 		<developerConnection>scm:git:ssh://github.com:borja-glez/springify.git</developerConnection>
 		<url>https://github.com/borja-glez/springify/tree/master</url>
 	</scm>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 
 </project>

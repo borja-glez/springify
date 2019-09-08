@@ -33,9 +33,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.borjaglez</groupId>
-			<artifactId>springify-all</artifactId>
+			<artifactId>springify-repository</artifactId>
 			<version>${project.version}</version>
-			<type>pom</type>
 		</dependency>
 
 		<dependency>
