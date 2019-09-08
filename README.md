@@ -1,6 +1,6 @@
 # Springify is an open source Java Spring utility library #
 
-[![Build Status](https://travis-ci.org/borja-glez/springify.svg?branch=master)](https://travis-ci.org/borja-glez/springify) [![Maven Central](https://img.shields.io/maven-central/v/com.borjaglez/springify.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.borjaglez%22%20AND%20a:%22springify%22) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://travis-ci.org/borja-glez/springify.svg?branch=master)](https://travis-ci.org/borja-glez/springify) [![Maven Central](https://img.shields.io/maven-central/v/com.borjaglez/springify.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.borjaglez%22%20AND%20a:%22springify%22) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/5ae73404dd44141ae78b)
 
 ### Use Springify as Maven dependency
 
