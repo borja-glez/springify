@@ -126,7 +126,7 @@ public class WhereSpecification<T> implements Specification<T> {
 		 */
 		case EQUAL:
 			value = parseValue(path, value);
-			p = equalPredicate(cb, path, value, ignoreCase);
+			p = equal(cb, path, value, ignoreCase);
 			break;
 		case NOT_EQUAL:
 			value = parseValue(path, value);
@@ -207,7 +207,7 @@ public class WhereSpecification<T> implements Specification<T> {
 		return p;
 	}
 
-	private Predicate equalPredicate(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
+	private Predicate equal(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) { // NOSONAR
 		if (ignoreCase)
 			return cb.equal(cb.upper(path.as(String.class)), value.toString().toUpperCase());
 		else

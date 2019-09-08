@@ -29,6 +29,7 @@ import com.borjaglez.springify.repository.filter.PageFilter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Jon (Zhongjun Tian)
@@ -94,6 +95,13 @@ public class SpecificationBuilder<T> {
 		return this;
 	}
 
+	public SpecificationBuilder<T> groupBy(String... fields) {
+		specification.add(((root, criteriaQuery, criteriaBuilder) -> criteriaQuery
+				.groupBy(Arrays.asList(fields).stream().map(root::get).collect(Collectors.toList()))
+				.getRestriction()));
+		return this;
+	}
+
 	public Long count() {
 		return repository.count(specification);
 	}
@@ -113,9 +121,9 @@ public class SpecificationBuilder<T> {
 	public List<T> findAll(Sort sort) {
 		return repository.findAll(specification, sort);
 	}
-	
+
 	public Page<T> findAll(@NonNull PageFilter pageFilter) {
-		if(isInValidPageFilter(pageFilter)) {
+		if (isInValidPageFilter(pageFilter)) {
 			throw new IllegalArgumentException("Page Filter require ar least the page index and the page size.");
 		}
 		if (pageFilter.getPageIndex() < 0) {
