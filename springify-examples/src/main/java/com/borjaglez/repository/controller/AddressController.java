@@ -98,4 +98,11 @@ public class AddressController {
 				.where(cb.or(cb.like(root.get("name"), "%Test%"), cb.like(join.get("name"), "%Test%")));
 		return entityManager.createQuery(query.distinct(true)).getResultList();
 	}
+
+	@PostMapping(path = "/dateFilter", produces = "application/json")
+	@Transactional(readOnly = true)
+	public @ResponseBody List<Address> dateFilter(@RequestBody AnyPageFilter anyPageFilter) {
+		return SpecificationBuilder.selectDistinctFrom(addressRepository).where(anyPageFilter).findAll(anyPageFilter)
+				.getContent();
+	}
 }

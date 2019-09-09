@@ -76,6 +76,9 @@ public class AnyPageFilter extends AbstractPageFilter {
 			filters.add(new Filter(Logic.OR, filtersValue));
 
 		}
+		if(fields != null && fields.size() <= 1) {
+			return new Filter(Logic.OR, filters);
+		}
 		return new Filter(Logic.AND, filters);
 	}
 
