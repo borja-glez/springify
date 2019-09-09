@@ -26,6 +26,7 @@ import com.borjaglez.springify.repository.filter.AbstractPageFilter;
 import com.borjaglez.springify.repository.filter.Filter;
 import com.borjaglez.springify.repository.filter.Filter.Operator;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -60,24 +61,32 @@ public class SpecificationBuilder<T> {
 	}
 
 	public SpecificationBuilder<T> where(Filter filter) {
-		if (this.repository == null) {
-			throw new IllegalStateException("Did not specify which repository, please use from() before where()");
-		}
-		specification.add(new WhereSpecification<T>(filter));
-		return this;
+		return where(filter, null);
 	}
 
 	public SpecificationBuilder<T> where(AbstractPageFilter pageFilter) {
-		if (this.repository == null) {
-			throw new IllegalStateException("Did not specify which repository, please use from() before where()");
-		}
-		specification.add(new WhereSpecification<T>(pageFilter.toFilter()));
-		return this;
+		return where(pageFilter, null);
 	}
 
 	public SpecificationBuilder<T> where(String field, Operator operator, Object value) {
+		return where(field, operator, value, null);
+	}
+
+	public SpecificationBuilder<T> where(Filter filter, SimpleDateFormat dateFormat) {
+		if (this.repository == null) {
+			throw new IllegalStateException("Did not specify which repository, please use from() before where()");
+		}
+		specification.add(new WhereSpecification<T>(filter, dateFormat));
+		return this;
+	}
+
+	public SpecificationBuilder<T> where(AbstractPageFilter pageFilter, SimpleDateFormat dateFormat) {
+		return where(pageFilter.toFilter(), dateFormat);
+	}
+
+	public SpecificationBuilder<T> where(String field, Operator operator, Object value, SimpleDateFormat dateFormat) {
 		Filter filter = new Filter(field, operator, value);
-		return where(filter);
+		return where(filter, dateFormat);
 	}
 
 	public SpecificationBuilder<T> leftJoin(String... tables) {

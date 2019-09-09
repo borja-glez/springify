@@ -45,6 +45,11 @@ public class WhereSpecification<T> implements Specification<T> {
 		this.filter = filter;
 	}
 
+	public WhereSpecification(Filter filter, SimpleDateFormat dateFormat) {
+		this(filter);
+		this.dateFormat = dateFormat;
+	}
+
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
 		return getPredicate(filter, root, cb);

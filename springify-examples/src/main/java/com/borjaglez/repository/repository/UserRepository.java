@@ -1,8 +1,10 @@
 package com.borjaglez.repository.repository;
 
-import com.borjaglez.repository.model.User;
-import com.borjaglez.springify.repository.jpa.ExtendedJpaRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface UserRepository extends ExtendedJpaRepository<User, Integer> {
+import com.borjaglez.repository.model.User;
+
+public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
 }
