@@ -15,6 +15,7 @@
  */
 package com.borjaglez.springify.repository.specification;
 
+import org.hibernate.query.criteria.internal.path.PluralAttributePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,6 +26,7 @@ import com.borjaglez.springify.repository.filter.Filter.Operator;
 import com.borjaglez.springify.repository.specification.exception.SpecificationException;
 
 import javax.persistence.criteria.*;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -37,9 +39,10 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class WhereSpecification<T> implements Specification<T> {
 	private static Logger logger = LoggerFactory.getLogger(WhereSpecification.class);
-	private SimpleDateFormat defaultDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	private SimpleDateFormat defaultDateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 	private SimpleDateFormat dateFormat;
 	private transient Filter filter;
+	private transient Root<T> root;
 
 	public WhereSpecification(Filter filter) {
 		this.filter = filter;
@@ -52,6 +55,7 @@ public class WhereSpecification<T> implements Specification<T> {
 
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+		this.root = root;
 		return getPredicate(filter, root, cb);
 	}
 
@@ -295,14 +299,24 @@ public class WhereSpecification<T> implements Specification<T> {
 		return value;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Path<T> parsePath(Path<? extends T> root, String field) {
 		if (!field.contains(Filter.PATH_DELIMITER)) {
-			return root.get(field);
+			try {
+				return root.get(field);
+			} catch(IllegalStateException e) {
+				return (Path<T>) root;
+			}
 		}
 		int i = field.indexOf(Filter.PATH_DELIMITER);
 		String firstPart = field.substring(0, i);
 		String secondPart = field.substring(i + 1, field.length());
 		Path<T> p = root.get(firstPart);
+		if (Collection.class.isAssignableFrom(p.getJavaType()) && p instanceof PluralAttributePath) {
+			PluralAttributePath<T> pluralAttributePath = (PluralAttributePath<T>) p;
+			Join<T, ?> join = this.root.joinList(pluralAttributePath.getAttribute().getName());
+			return parsePath(join.get(secondPart), secondPart);
+		}
 		return parsePath(p, secondPart);
 	}
 

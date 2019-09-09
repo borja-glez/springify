@@ -16,6 +16,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.borjaglez.repository.entity.UserStateEnum;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "users")
@@ -31,6 +32,7 @@ public class User {
 	@Column
 	private String lastname;
 	
+	@JsonBackReference
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "address_id")
 	private Address address;
