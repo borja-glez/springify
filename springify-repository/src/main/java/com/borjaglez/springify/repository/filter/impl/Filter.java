@@ -13,32 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.borjaglez.springify.repository.filter;
+package com.borjaglez.springify.repository.filter.impl;
 
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.borjaglez.springify.repository.filter.IFilter;
+import com.borjaglez.springify.repository.filter.Logic;
+import com.borjaglez.springify.repository.filter.Operator;
 
 /**
  * @author Jon (Zhongjun Tian)
  * @author Borja González Enríquez
  */
-public class Filter {
+public final class Filter implements IFilter {
 
 	// delimiter for crossing table search
 	public static final String PATH_DELIMITER = ".";
 	public static final String LEFT_BRACKET = "(";
 	public static final String RIGHT_BRACKET = ")";
 
-	String field;
-	Operator operator;
-	Object value;
-	Logic logic;
-	Boolean ignoreCase = false;
-	List<Filter> filters;
+	protected String field;
+	protected Operator operator;
+	protected Object value;
+	protected Logic logic;
+	protected Boolean ignoreCase;
+	protected List<Filter> filters;
 
 	public Filter() {
+		super();
 	}
 
 	public Filter(String field, Operator operator, Object value) {
@@ -50,11 +53,6 @@ public class Filter {
 	public Filter(Logic logic, Filter... filters) {
 		this.logic = logic;
 		this.filters = Arrays.asList(filters);
-	}
-	
-	public Filter(Logic logic, List<Filter> filters) {
-		this.logic = logic;
-		this.filters = filters;
 	}
 
 	public static Filter and(Filter filter) {
@@ -71,14 +69,6 @@ public class Filter {
 
 	public static Filter or(Filter... filters) {
 		return new Filter(Logic.OR, filters);
-	}
-
-	public Logic getLogic() {
-		return logic;
-	}
-
-	public void setLogic(Logic logic) {
-		this.logic = logic;
 	}
 
 	public String getField() {
@@ -105,6 +95,22 @@ public class Filter {
 		this.value = value;
 	}
 
+	public Logic getLogic() {
+		return logic;
+	}
+
+	public void setLogic(Logic logic) {
+		this.logic = logic;
+	}
+
+	public Boolean getIgnoreCase() {
+		return ignoreCase;
+	}
+
+	public void setIgnoreCase(Boolean ignoreCase) {
+		this.ignoreCase = ignoreCase;
+	}
+
 	public List<Filter> getFilters() {
 		return filters;
 	}
@@ -112,45 +118,9 @@ public class Filter {
 	public void setFilters(List<Filter> filters) {
 		this.filters = filters;
 	}
-	
-	public Boolean getIgnoreCase() {
-		return ignoreCase;
-	}
-	
-	public void setIgnoreCase(Boolean ignoreCase) {
-		this.ignoreCase = ignoreCase;
-	}
 
-	public enum Logic {
-		AND("and"), OR("or");
-
-		private String value;
-
-		private Logic(String value) {
-			this.value = value;
-		}
-
-		@JsonValue
-		public String getValue() {
-			return value;
-		}
-	}
-
-	public enum Operator {
-		EQUAL("eq"), NOT_EQUAL("neq"), IS_NULL("isnull"), IS_NOT_NULL("isnotnull"), IS_EMPTY("isempty"),
-		IS_NOT_EMPTY("isnotempty"), CONTAINS("contains"), NOT_CONTAINS("notcontains"), STARTS_WITH("startswith"),
-		ENDS_WITH("endswith"), GREATER_THAN("gt"), LESS_THAN("lt"), GREATER_THAN_OR_EQUAL("gte"),
-		LESS_THAN_OR_EQUAL("lte"), IN("in");
-
-		private String value;
-
-		private Operator(String value) {
-			this.value = value;
-		}
-
-		@JsonValue
-		public String getValue() {
-			return value;
-		}
+	@Override
+	public Filter toFilter() {
+		return this;
 	}
 }

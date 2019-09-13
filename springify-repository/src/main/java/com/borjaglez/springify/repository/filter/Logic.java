@@ -15,27 +15,22 @@
  */
 package com.borjaglez.springify.repository.filter;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
- * @author Borja González Enríquez
+ * @author borjaglez
  */
-public class PageFilter extends AbstractPageFilter {
+public enum Logic {
+	AND("and"), OR("or");
 
-	Filter filter;
+	private String value;
 
-	public PageFilter() {
-		super();
+	private Logic(String value) {
+		this.value = value;
 	}
 
-	public Filter getFilter() {
-		return filter;
-	}
-
-	public void setFilter(Filter filter) {
-		this.filter = filter;
-	}
-
-	@Override
-	public Filter toFilter() {
-		return filter;
+	@JsonValue
+	public String getValue() {
+		return value;
 	}
 }

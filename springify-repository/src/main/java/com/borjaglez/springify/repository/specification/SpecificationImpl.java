@@ -28,24 +28,29 @@ import org.springframework.data.jpa.domain.Specification;
 
 /**
  * @author Jon (Zhongjun Tian)
- * @author Borja González Enríquez
  */
 @SuppressWarnings("serial")
 public class SpecificationImpl<T> implements Specification<T> {
 	private List<Specification<T>> specifications = new LinkedList<>();
 
-	@Override
-	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-		List<Predicate> predicates = new ArrayList<>();
-		for (Specification<T> specification : specifications) {
-			Predicate p = specification.toPredicate(root, query, criteriaBuilder);
-			if (p != null)
-				predicates.add(p);
-		}
-		return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
-	}
 
-	public void add(Specification<T> specification) {
-		specifications.add(specification);
-	}
+    /*
+     this method is called by
+     SimpleJpaRepository.applySpecificationToCriteria(Specification<T> spec, CriteriaQuery<S> query)
+     https://github.com/spring-projects/spring-data-jpa/blob/master/src/main/java/org/springframework/data/jpa/repository/support/SimpleJpaRepository.java
+     */
+    @Override
+    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+        List<Predicate> predicates = new ArrayList<>();
+        for(Specification<T> specification: specifications){
+            Predicate p = specification.toPredicate(root, cq, cb);
+            if(p!=null)
+                predicates.add(p);
+        }
+        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+    }
+
+    public void add(Specification<T> specification){
+        specifications.add(specification);
+    }
 }

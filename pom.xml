@@ -5,7 +5,7 @@
 
 	<groupId>com.borjaglez</groupId>
 	<artifactId>springify</artifactId>
-	<version>0.2.3-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Springify</name>
@@ -55,10 +55,7 @@
 
 	<modules>
 		<module>springify-core</module>
-		<module>springify-security</module>
 		<module>springify-repository</module>
-		<module>springify-all</module>
-		<module>springify-examples</module>
 	</modules>
 
 	<profiles>

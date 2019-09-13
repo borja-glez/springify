@@ -22,9 +22,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.lang.NonNull;
 
-import com.borjaglez.springify.repository.filter.AbstractPageFilter;
-import com.borjaglez.springify.repository.filter.Filter;
-import com.borjaglez.springify.repository.filter.Filter.Operator;
+import com.borjaglez.springify.repository.filter.IFilter;
+import com.borjaglez.springify.repository.filter.IPageFilter;
+import com.borjaglez.springify.repository.filter.impl.Filter;
+import com.borjaglez.springify.repository.filter.Operator;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -37,8 +38,8 @@ import java.util.stream.Collectors;
  * @author Borja González Enríquez
  */
 public class SpecificationBuilder<T> {
-	private JpaSpecificationExecutor<T> repository;
-	private SpecificationImpl<T> specification;
+	protected JpaSpecificationExecutor<T> repository;
+	protected SpecificationImpl<T> specification;
 
 	public static <T, R extends JpaRepository<T, ?> & JpaSpecificationExecutor<T>> SpecificationBuilder<T> selectFrom(
 			R repository) {
@@ -60,28 +61,20 @@ public class SpecificationBuilder<T> {
 		return this;
 	}
 
-	public SpecificationBuilder<T> where(Filter filter) {
+	public SpecificationBuilder<T> where(IFilter filter) {
 		return where(filter, null);
-	}
-
-	public SpecificationBuilder<T> where(AbstractPageFilter pageFilter) {
-		return where(pageFilter, null);
 	}
 
 	public SpecificationBuilder<T> where(String field, Operator operator, Object value) {
 		return where(field, operator, value, null);
 	}
 
-	public SpecificationBuilder<T> where(Filter filter, SimpleDateFormat dateFormat) {
+	public SpecificationBuilder<T> where(IFilter filter, SimpleDateFormat dateFormat) {
 		if (this.repository == null) {
 			throw new IllegalStateException("Did not specify which repository, please use from() before where()");
 		}
-		specification.add(new WhereSpecification<T>(filter, dateFormat));
+		specification.add(new WhereSpecification<T>(filter.toFilter(), dateFormat));
 		return this;
-	}
-
-	public SpecificationBuilder<T> where(AbstractPageFilter pageFilter, SimpleDateFormat dateFormat) {
-		return where(pageFilter.toFilter(), dateFormat);
 	}
 
 	public SpecificationBuilder<T> where(String field, Operator operator, Object value, SimpleDateFormat dateFormat) {
@@ -130,12 +123,12 @@ public class SpecificationBuilder<T> {
 		return repository.findAll(specification, sort);
 	}
 
-	public Page<T> findAll(@NonNull AbstractPageFilter pageFilter) {
+	public Page<T> findAll(@NonNull IPageFilter pageFilter) {
 		if (isInValidPageFilter(pageFilter)) {
-			throw new IllegalArgumentException("Page Filter require ar least the page index and the page size.");
+			throw new IllegalArgumentException("Page Filter require ar least the page number and the page size.");
 		}
-		if (pageFilter.getPageIndex() < 0) {
-			throw new IllegalArgumentException("Page index must not be less than zero!");
+		if (pageFilter.getPageNumber() < 0) {
+			throw new IllegalArgumentException("Page number must not be less than zero!");
 		}
 		if (pageFilter.getPageSize() < 1) {
 			throw new IllegalArgumentException("Page size must not be less than one!");
@@ -143,7 +136,7 @@ public class SpecificationBuilder<T> {
 		return findAll(pageFilter.toPageable());
 	}
 
-	private boolean isInValidPageFilter(AbstractPageFilter pageFilter) {
-		return pageFilter == null || pageFilter.getPageIndex() == null || pageFilter.getPageSize() == null;
+	private boolean isInValidPageFilter(IPageFilter pageFilter) {
+		return pageFilter == null || pageFilter.getPageNumber() == null || pageFilter.getPageSize() == null;
 	}
 }

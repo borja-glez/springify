@@ -24,7 +24,6 @@ import java.util.List;
  * Created by zhongjun on 6/18/17.
  * 
  * @author Jon (Zhongjun Tian)
- * @author Borja González Enríquez
  */
 @SuppressWarnings("serial")
 public class JoinSpecification<T> implements Specification<T> {

@@ -6,26 +6,22 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.borjaglez.repository.entity.UserStateEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "profiles")
+public class Profile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,16 +31,7 @@ public class User {
 	private String name;
 
 	@Column
-	private String lastname;
-
-	@JsonBackReference
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "address_id")
-	private Address address;
-
-	@Column
-	@Enumerated(EnumType.STRING)
-	private UserStateEnum state;
+	private String alias;
 
 	@Column(name = "reg_date")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -54,12 +41,16 @@ public class User {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modDate;
 
+	@JsonBackReference
+	@ManyToMany(mappedBy = "profiles")
+	private Set<User> users = new HashSet<>();
+
 	@JsonManagedReference
 	@ManyToMany
-	@JoinTable(name = "user_profiles_map", joinColumns = @JoinColumn(name = "id_user"), inverseJoinColumns = @JoinColumn(name = "id_profile"))
-	private Set<Profile> profiles = new HashSet<>();
+	@JoinTable(name = "profiles_roles_map", joinColumns = @JoinColumn(name = "id_profile"), inverseJoinColumns = @JoinColumn(name = "id_role"))
+	private Set<Role> roles = new HashSet<>();
 
-	public User() {
+	public Profile() {
 		super();
 	}
 
@@ -79,28 +70,12 @@ public class User {
 		this.name = name;
 	}
 
-	public String getLastname() {
-		return lastname;
+	public String getAlias() {
+		return alias;
 	}
 
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
-
-	public Address getAddress() {
-		return address;
-	}
-
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-
-	public UserStateEnum getState() {
-		return state;
-	}
-
-	public void setState(UserStateEnum state) {
-		this.state = state;
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
 
 	public Date getRegDate() {
@@ -119,11 +94,19 @@ public class User {
 		this.modDate = modDate;
 	}
 
-	public Set<Profile> getProfiles() {
-		return profiles;
+	public Set<User> getUsers() {
+		return users;
 	}
 
-	public void setProfiles(Set<Profile> profiles) {
-		this.profiles = profiles;
+	public void setUsers(Set<User> users) {
+		this.users = users;
+	}
+	
+	public Set<Role> getRoles() {
+		return roles;
+	}
+	
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
 	}
 }

@@ -4,11 +4,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.borjaglez</groupId>
-		<artifactId>springify</artifactId>
-		<version>0.2.3-SNAPSHOT</version>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.8.RELEASE</version>
+		<relativePath />
 	</parent>
+
+	<groupId>com.borjaglez</groupId>
 	<artifactId>springify-examples</artifactId>
+	<version>0.2.3-SNAPSHOT</version>
 
 	<name>Springify Examples</name>
 	<description>Implementation examples of Springify.</description>
@@ -42,7 +46,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- PostgreSQL -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>

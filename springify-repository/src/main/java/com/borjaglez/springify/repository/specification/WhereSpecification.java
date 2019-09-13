@@ -20,9 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 
-import com.borjaglez.springify.repository.filter.Filter;
-import com.borjaglez.springify.repository.filter.Filter.Logic;
-import com.borjaglez.springify.repository.filter.Filter.Operator;
+import com.borjaglez.springify.repository.filter.impl.Filter;
+import com.borjaglez.springify.repository.filter.Logic;
+import com.borjaglez.springify.repository.filter.Operator;
 import com.borjaglez.springify.repository.specification.exception.SpecificationException;
 
 import javax.persistence.criteria.*;
@@ -39,10 +39,11 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class WhereSpecification<T> implements Specification<T> {
 	private static Logger logger = LoggerFactory.getLogger(WhereSpecification.class);
-	private SimpleDateFormat defaultDateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+	private SimpleDateFormat defaultDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 	private SimpleDateFormat dateFormat;
 	private transient Filter filter;
-	private transient Root<T> root;
+	private transient Root<?> root;
+	private transient Join<?, ?> join;
 
 	public WhereSpecification(Filter filter) {
 		this.filter = filter;
@@ -95,7 +96,7 @@ public class WhereSpecification<T> implements Specification<T> {
 	private Predicate doGetPredicate(Filter filter, Path<T> root, CriteriaBuilder cb) {
 		String field = filter.getField();
 		Boolean ignoreCase = filter.getIgnoreCase();
-		Path<T> path = null;
+		Path<?> path = null;
 		try {
 			logger.debug("Parsing child path {} of root {}", field, root.getJavaType());
 			path = parsePath(root, field);
@@ -117,7 +118,7 @@ public class WhereSpecification<T> implements Specification<T> {
 		}
 	}
 
-	private Predicate doGetPredicate(CriteriaBuilder cb, Path<T> path, Operator operator, Object value,
+	private Predicate doGetPredicate(CriteriaBuilder cb, Path<?> path, Operator operator, Object value,
 			Boolean ignoreCase) {
 		Predicate p = null;
 		// look at Hibernate Mapping types
@@ -125,7 +126,7 @@ public class WhereSpecification<T> implements Specification<T> {
 		if (!(value instanceof Comparable || value instanceof Collection)) {
 			throw new IllegalStateException(
 					"This library only support primitive types and date/time types in the list: "
-							+ "Integer, Long, Double, Float, Short, BidDecimal, Character, String, Byte, Boolean"
+							+ "Integer, Long, Double, Float, Short, BigDecimal, Character, String, Byte, Boolean"
 							+ ", Date, Time, TimeStamp, Calendar");
 		}
 
@@ -216,77 +217,77 @@ public class WhereSpecification<T> implements Specification<T> {
 		return p;
 	}
 
-	private Predicate equal(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) { // NOSONAR
-		if (ignoreCase)
+	private Predicate equal(CriteriaBuilder cb, Path<?> path, Object value, Boolean ignoreCase) { // NOSONAR
+		if (Boolean.TRUE.equals(ignoreCase))
 			return cb.equal(cb.upper(path.as(String.class)), value.toString().toUpperCase());
 		else
 			return cb.equal(path, value);
 	}
 
-	private Predicate notEqual(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
-		if (ignoreCase)
+	private Predicate notEqual(CriteriaBuilder cb, Path<?> path, Object value, Boolean ignoreCase) {
+		if (Boolean.TRUE.equals(ignoreCase))
 			return cb.notEqual(cb.upper(path.as(String.class)), value.toString().toUpperCase());
 		else
 			return cb.notEqual(path, value);
 	}
 
-	private Predicate contains(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
-		if (ignoreCase)
+	private Predicate contains(CriteriaBuilder cb, Path<?> path, Object value, Boolean ignoreCase) {
+		if (Boolean.TRUE.equals(ignoreCase))
 			return cb.like(cb.upper(path.as(String.class)), "%" + value.toString().toUpperCase() + "%");
 		else
 			return cb.like(path.as(String.class), "%" + value + "%");
 	}
 
-	private Predicate notContains(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
-		if (ignoreCase)
+	private Predicate notContains(CriteriaBuilder cb, Path<?> path, Object value, Boolean ignoreCase) {
+		if (Boolean.TRUE.equals(ignoreCase))
 			return cb.notLike(cb.upper(path.as(String.class)), "%" + value.toString().toUpperCase() + "%");
 		else
 			return cb.notLike(path.as(String.class), "%" + value + "%");
 	}
 
-	private Predicate startsWith(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
-		if (ignoreCase)
+	private Predicate startsWith(CriteriaBuilder cb, Path<?> path, Object value, Boolean ignoreCase) {
+		if (Boolean.TRUE.equals(ignoreCase))
 			return cb.like(cb.upper(path.as(String.class)), value.toString().toUpperCase() + "%");
 		else
 			return cb.like(path.as(String.class), value + "%");
 	}
 
-	private Predicate endsWith(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
-		if (ignoreCase)
+	private Predicate endsWith(CriteriaBuilder cb, Path<?> path, Object value, Boolean ignoreCase) {
+		if (Boolean.TRUE.equals(ignoreCase))
 			return cb.like(cb.upper(path.as(String.class)), "%" + value.toString().toUpperCase());
 		else
 			return cb.like(path.as(String.class), "%" + value);
 	}
 
-	private Predicate greaterThan(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
-		if (ignoreCase)
+	private Predicate greaterThan(CriteriaBuilder cb, Path<?> path, Object value, Boolean ignoreCase) {
+		if (Boolean.TRUE.equals(ignoreCase))
 			return cb.greaterThan(cb.upper(path.as(String.class)), value.toString().toUpperCase());
 		else
 			return cb.greaterThan(path.as(String.class), value.toString());
 	}
 
-	private Predicate greaterThanOrEqualTo(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
-		if (ignoreCase)
+	private Predicate greaterThanOrEqualTo(CriteriaBuilder cb, Path<?> path, Object value, Boolean ignoreCase) {
+		if (Boolean.TRUE.equals(ignoreCase))
 			return cb.greaterThanOrEqualTo(cb.upper(path.as(String.class)), value.toString().toUpperCase());
 		else
 			return cb.greaterThanOrEqualTo(path.as(String.class), value.toString());
 	}
 
-	private Predicate lessThan(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
-		if (ignoreCase)
+	private Predicate lessThan(CriteriaBuilder cb, Path<?> path, Object value, Boolean ignoreCase) {
+		if (Boolean.TRUE.equals(ignoreCase))
 			return cb.lessThan(cb.upper(path.as(String.class)), value.toString().toUpperCase());
 		else
 			return cb.lessThan(path.as(String.class), value.toString());
 	}
 
-	private Predicate lessThanOrEqualTo(CriteriaBuilder cb, Path<T> path, Object value, Boolean ignoreCase) {
-		if (ignoreCase)
+	private Predicate lessThanOrEqualTo(CriteriaBuilder cb, Path<?> path, Object value, Boolean ignoreCase) {
+		if (Boolean.TRUE.equals(ignoreCase))
 			return cb.lessThanOrEqualTo(cb.upper(path.as(String.class)), value.toString().toUpperCase());
 		else
 			return cb.lessThanOrEqualTo(path.as(String.class), value.toString());
 	}
 
-	private Object parseValue(Path<T> path, Object value) {
+	private Object parseValue(Path<?> path, Object value) {
 		if (Date.class.isAssignableFrom(path.getJavaType())) {
 			try {
 				SimpleDateFormat tmpDateFormat = this.dateFormat != null ? this.dateFormat : defaultDateFormat;
@@ -299,23 +300,21 @@ public class WhereSpecification<T> implements Specification<T> {
 		return value;
 	}
 
-	@SuppressWarnings("unchecked")
-	private Path<T> parsePath(Path<? extends T> root, String field) {
+	private Path<?> parsePath(Path<?> path, String field) {
 		if (!field.contains(Filter.PATH_DELIMITER)) {
-			try {
-				return root.get(field);
-			} catch(IllegalStateException e) {
-				return (Path<T>) root;
-			}
+			return path.get(field);
 		}
 		int i = field.indexOf(Filter.PATH_DELIMITER);
 		String firstPart = field.substring(0, i);
 		String secondPart = field.substring(i + 1, field.length());
-		Path<T> p = root.get(firstPart);
-		if (Collection.class.isAssignableFrom(p.getJavaType()) && p instanceof PluralAttributePath) {
-			PluralAttributePath<T> pluralAttributePath = (PluralAttributePath<T>) p;
-			Join<T, ?> join = this.root.joinList(pluralAttributePath.getAttribute().getName());
-			return parsePath(join.get(secondPart), secondPart);
+		Path<?> p = path.get(firstPart);
+		if (Iterable.class.isAssignableFrom(p.getJavaType()) && p instanceof PluralAttributePath) {
+			PluralAttributePath<?> pluralAttributePath = (PluralAttributePath<?>) p;
+			if (join == null)
+				join = root.join(pluralAttributePath.getAttribute().getName(), JoinType.LEFT);
+			else
+				join = join.join(pluralAttributePath.getAttribute().getName(), JoinType.LEFT);
+			return parsePath(join, secondPart);
 		}
 		return parsePath(p, secondPart);
 	}
