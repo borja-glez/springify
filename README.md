@@ -4,7 +4,7 @@
 
 ### Use Springify as Maven dependency
 
-Add this to your pom.xml file to use the latest version of Springify (with all modules):
+Add this to your pom.xml file to use the latest version of Springify Repository:
 
 ```xml  
 <dependency>
