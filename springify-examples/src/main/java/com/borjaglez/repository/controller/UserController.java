@@ -38,7 +38,7 @@ public class UserController {
 
 	@PostMapping(path = "/getUsers", produces = "application/json")
 	public @ResponseBody List<User> getUsers(@RequestBody Filter filter) {
-		return SpecificationBuilder.selectDistinctFrom(userRepository).leftJoin("address", "profiles").where(filter).findAll();
+		return SpecificationBuilder.selectFrom(userRepository).where(filter).findAll();
 	}
 
 	@PostMapping(path = "/getActiveUsers", produces = "application/json")
