@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.criteria.JoinType;
+
 /**
  * @author Jon (Zhongjun Tian)
  * @author Borja González Enríquez
@@ -61,19 +63,27 @@ public class SpecificationBuilder<T> {
 		return this;
 	}
 
-	public SpecificationBuilder<T> where(IFilter filter) {
-		return where(filter, null);
-	}
-
 	public SpecificationBuilder<T> where(String field, Operator operator, Object value) {
 		return where(field, operator, value, null);
 	}
+	
+	public SpecificationBuilder<T> where(IFilter filter) {
+		return where(filter, null, null);
+	}
 
 	public SpecificationBuilder<T> where(IFilter filter, SimpleDateFormat dateFormat) {
+		return where(filter, dateFormat, null);
+	}
+	
+	public SpecificationBuilder<T> where(IFilter filter, JoinType joinType) {
+		return where(filter, null, joinType);
+	}
+	
+	public SpecificationBuilder<T> where(IFilter filter, SimpleDateFormat dateFormat, JoinType joinType) {
 		if (this.repository == null) {
 			throw new IllegalStateException("Did not specify which repository, please use from() before where()");
 		}
-		specification.add(new WhereSpecification<T>(filter.toFilter(), dateFormat));
+		specification.add(new WhereSpecification<T>(filter.toFilter(), dateFormat, joinType));
 		return this;
 	}
 

@@ -41,6 +41,8 @@ public class WhereSpecification<T> implements Specification<T> {
 	private static Logger logger = LoggerFactory.getLogger(WhereSpecification.class);
 	private SimpleDateFormat defaultDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 	private SimpleDateFormat dateFormat;
+	private static final JoinType defaultJoinType = JoinType.LEFT;
+	private JoinType joinType;
 	private transient Filter filter;
 	private transient Root<?> root;
 	private transient Join<?, ?> join;
@@ -52,6 +54,16 @@ public class WhereSpecification<T> implements Specification<T> {
 	public WhereSpecification(Filter filter, SimpleDateFormat dateFormat) {
 		this(filter);
 		this.dateFormat = dateFormat;
+	}
+
+	public WhereSpecification(Filter filter, SimpleDateFormat dateFormat, JoinType joinType) {
+		this(filter, dateFormat);
+		this.joinType = joinType;
+	}
+
+	public WhereSpecification(Filter filter, JoinType joinType) {
+		this(filter);
+		this.joinType = joinType;
 	}
 
 	@Override
@@ -81,6 +93,7 @@ public class WhereSpecification<T> implements Specification<T> {
 	private Predicate[] getPredicateList(Filter filter, Path<T> root, CriteriaBuilder cb) {
 		List<Predicate> predicateList = new LinkedList<>();
 		for (Filter f : filter.getFilters()) {
+			join = null;
 			Predicate predicate = getPredicate(f, root, cb);
 			if (predicate != null)
 				predicateList.add(predicate);
@@ -310,10 +323,11 @@ public class WhereSpecification<T> implements Specification<T> {
 		Path<?> p = path.get(firstPart);
 		if (Iterable.class.isAssignableFrom(p.getJavaType()) && p instanceof PluralAttributePath) {
 			PluralAttributePath<?> pluralAttributePath = (PluralAttributePath<?>) p;
+			JoinType tmpJoinType = this.joinType != null ? this.joinType : defaultJoinType;
 			if (join == null)
-				join = root.join(pluralAttributePath.getAttribute().getName(), JoinType.LEFT);
+				join = root.join(pluralAttributePath.getAttribute().getName(), tmpJoinType);
 			else
-				join = join.join(pluralAttributePath.getAttribute().getName(), JoinType.LEFT);
+				join = join.join(pluralAttributePath.getAttribute().getName(), tmpJoinType);
 			return parsePath(join, secondPart);
 		}
 		return parsePath(p, secondPart);
