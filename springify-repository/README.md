@@ -11,7 +11,7 @@ Add this to your pom.xml file to use the latest version of Springify Repository:
 <dependency>
 	<groupId>com.borjaglez</groupId>
 	<artifactId>springify-repository</artifactId>
-	<version>0.3.1</version>
+	<version>0.3.2</version>
 </dependency>
 ```
  

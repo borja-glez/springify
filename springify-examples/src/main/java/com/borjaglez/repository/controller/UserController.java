@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.borjaglez.repository.entity.UserStateEnum;
 import com.borjaglez.repository.model.User;
 import com.borjaglez.repository.repository.UserRepository;
+import com.borjaglez.springify.repository.filter.impl.AnyPageFilter;
 import com.borjaglez.springify.repository.filter.impl.Filter;
 import com.borjaglez.springify.repository.filter.impl.PageFilter;
 import com.borjaglez.springify.repository.filter.Operator;
@@ -58,5 +59,10 @@ public class UserController {
 	@PostMapping(path = "/selectFromFindAllPagination", produces = "application/json")
 	public @ResponseBody List<User> selectFromFindAllPagination(@RequestBody PageFilter pageFilter) {
 		return SpecificationBuilder.selectFrom(userRepository).findAll(pageFilter).getContent();
+	}
+	
+	@PostMapping(path = "/anyPageFilter", produces = "application/json")
+	public @ResponseBody List<User> anyPageFilter(@RequestBody AnyPageFilter pageFilter) {
+		return SpecificationBuilder.selectDistinctFrom(userRepository).where(pageFilter).findAll(pageFilter).getContent();
 	}
 }
