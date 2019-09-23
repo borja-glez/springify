@@ -1,5 +1,7 @@
 # Springify Repository #
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.borjaglez/springify-repository.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.borjaglez%22%20AND%20a:%22springify-repository%22)
+
 Easy implementations of @JpaRepository.
 
 Springify Repository is based on https://github.com/ZhongjunTian/spring-repository-plus with some fixes:
@@ -9,8 +11,6 @@ Springify Repository is based on https://github.com/ZhongjunTian/spring-reposito
 * Fixes OneToOne and ManyToOne cross join on hibernate.
 * Added interfaces IFilter and IPageFilter to extend filter functionalities (like AnyPageFilter).
 * More coming :)
-
-[![Maven Central](https://img.shields.io/maven-central/v/com.borjaglez/springify-repository.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.borjaglez%22%20AND%20a:%22springify-repository%22)
 
 ### Use Springify Repository as Maven dependency
 Add this to your pom.xml file to use the latest version of Springify Repository:
