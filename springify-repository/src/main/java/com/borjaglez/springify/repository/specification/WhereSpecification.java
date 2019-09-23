@@ -15,21 +15,30 @@
  */
 package com.borjaglez.springify.repository.specification;
 
-import org.hibernate.query.criteria.internal.path.PluralAttributePath;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.hibernate.query.criteria.internal.path.AbstractPathImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 
-import com.borjaglez.springify.repository.filter.impl.Filter;
 import com.borjaglez.springify.repository.filter.Logic;
 import com.borjaglez.springify.repository.filter.Operator;
+import com.borjaglez.springify.repository.filter.impl.Filter;
 import com.borjaglez.springify.repository.specification.exception.SpecificationException;
-
-import javax.persistence.criteria.*;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by zhongjun on 6/18/17.
@@ -321,13 +330,13 @@ public class WhereSpecification<T> implements Specification<T> {
 		String firstPart = field.substring(0, i);
 		String secondPart = field.substring(i + 1, field.length());
 		Path<?> p = path.get(firstPart);
-		if (Iterable.class.isAssignableFrom(p.getJavaType()) && p instanceof PluralAttributePath) {
-			PluralAttributePath<?> pluralAttributePath = (PluralAttributePath<?>) p;
+		if (p instanceof AbstractPathImpl) {
+			AbstractPathImpl<?> abstractPath = (AbstractPathImpl<?>) p;
 			JoinType tmpJoinType = this.joinType != null ? this.joinType : defaultJoinType;
 			if (join == null)
-				join = root.join(pluralAttributePath.getAttribute().getName(), tmpJoinType);
+				join = root.join(abstractPath.getAttribute().getName(), tmpJoinType);
 			else
-				join = join.join(pluralAttributePath.getAttribute().getName(), tmpJoinType);
+				join = join.join(abstractPath.getAttribute().getName(), tmpJoinType);
 			return parsePath(join, secondPart);
 		}
 		return parsePath(p, secondPart);

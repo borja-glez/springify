@@ -34,35 +34,40 @@ public class UserController {
 
 	@PostMapping(path = "/selectFromFindAll", produces = "application/json")
 	public @ResponseBody List<User> selectFromFindAll() {
-		return SpecificationBuilder.selectFrom(userRepository).findAll();
+		return SpecificationBuilder.selectDistinctFrom(userRepository).findAll();
 	}
 
 	@PostMapping(path = "/getUsers", produces = "application/json")
 	public @ResponseBody List<User> getUsers(@RequestBody Filter filter) {
-		return SpecificationBuilder.selectFrom(userRepository).where(filter).findAll();
+		return SpecificationBuilder.selectDistinctFrom(userRepository).where(filter).findAll();
 	}
 
 	@PostMapping(path = "/getActiveUsers", produces = "application/json")
 	public @ResponseBody List<User> getActiveUsers(@RequestBody Filter filter) {
 		Filter stateActiveFilter = Filter.and(new Filter("state", Operator.EQUAL, UserStateEnum.ACTIVE));
-		return SpecificationBuilder.selectFrom(userRepository)
+		return SpecificationBuilder.selectDistinctFrom(userRepository)
 				.where(filter, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).where(stateActiveFilter).findAll();
 	}
 
 	@PostMapping(path = "/getActiveUsersSorting", produces = "application/json")
 	public @ResponseBody Page<User> getActiveUsersSorting(@RequestBody PageFilter pageFilter) {
 		Filter stateActiveFilter = Filter.and(new Filter("state", Operator.EQUAL, UserStateEnum.ACTIVE));
-		return SpecificationBuilder.selectFrom(userRepository).where(pageFilter, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).where(stateActiveFilter)
+		return SpecificationBuilder.selectDistinctFrom(userRepository).where(pageFilter, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).where(stateActiveFilter)
 				.findAll(pageFilter);
 	}
 
 	@PostMapping(path = "/selectFromFindAllPagination", produces = "application/json")
 	public @ResponseBody List<User> selectFromFindAllPagination(@RequestBody PageFilter pageFilter) {
-		return SpecificationBuilder.selectFrom(userRepository).findAll(pageFilter).getContent();
+		return SpecificationBuilder.selectDistinctFrom(userRepository).findAll(pageFilter).getContent();
 	}
 	
 	@PostMapping(path = "/anyPageFilter", produces = "application/json")
 	public @ResponseBody List<User> anyPageFilter(@RequestBody AnyPageFilter pageFilter) {
 		return SpecificationBuilder.selectDistinctFrom(userRepository).where(pageFilter).findAll(pageFilter).getContent();
+	}
+	
+	@PostMapping(path = "/getUsersOrder", produces = "application/json")
+	public @ResponseBody List<User> getUsersOrder(@RequestBody PageFilter filter) {
+		return SpecificationBuilder.selectFrom(userRepository).where(filter).groupBy("profiles.roles.alias").findAll(filter).getContent();
 	}
 }
